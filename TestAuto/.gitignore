@@ -1,1 +1,5 @@
 /bin/
+/logs/
+/target/
+/test-output/
+/reports/
