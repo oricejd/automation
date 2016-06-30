@@ -1,0 +1,8 @@
+logs/
+bin/
+test-output/
+target/
+reports/
+.settings/
+.claspath
+.project
