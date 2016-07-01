@@ -23,6 +23,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -47,11 +48,12 @@ public class SeleniumTestCaseBase {
 //	private long startTime;
 	private String baseUrl;
 	private String childClassName = this.getClass().getName();
-	private static String browser = "opera";
-	private static String grid= "no";
+	private String browser = "firefox";
+	private String grid= "no";
 	
     public static NgWebDriver ngWebDriver;
     public static WebDriverExtended webDriver;
+    public static WebDriver driver;
 //    private WebDriver driver;
 
 	
@@ -68,22 +70,34 @@ public class SeleniumTestCaseBase {
 	
 	@BeforeSuite
 	public void beforeSuite() throws Exception{
-		WebDriver driver = getBrowserDriver(grid);
+//		WebDriver driver = getBrowserDriver(grid);
 		
-		webDriver = new WebDriverExtended(driver);
-		ngWebDriver = new NgWebDriver((JavascriptExecutor)webDriver);
+		//
+		//
 		
-		webDriver.manage().window().maximize();
-		((JavascriptExecutor) webDriver).executeScript("window.focus();");
+    	System.setProperty("webdriver.opera.driver", "drivers/operadriver.exe");
+    	driver = new EventFiringWebDriver(new OperaDriver()).register(new MyEventListener());
+      
+		
+		//
+		//
 		baseUrl = System.getProperty("baseUrl");
 		
-		driver.manage().timeouts().implicitlyWait(10, SECONDS);
-		driver.manage().timeouts().pageLoadTimeout(10, SECONDS);
+//		webDriver = new WebDriverExtended(driver);
+		webDriver = new WebDriverExtended(webDriver, baseUrl);
+		ngWebDriver = new NgWebDriver((JavascriptExecutor)driver);
+		
+		webDriver.manage().window().maximize();
+		webDriver.executeScript("window.focus();");
+		
+		webDriver.manage().timeouts().implicitlyWait(10, SECONDS);
+		webDriver.manage().timeouts().pageLoadTimeout(10, SECONDS);
 	}
 	
 	@AfterSuite
 	public void afrerSuite() throws Exception{
 		webDriver.quit();
+		driver.quit();
 	}
 
 
@@ -159,11 +173,6 @@ public class SeleniumTestCaseBase {
 //					baseWebDriver = new FirefoxDriver(ffProfile);
 				}
 
-//				baseWebDriver.manage().window().maximize();
-//				((JavascriptExecutor) baseWebDriver).executeScript("window.focus();");
-//				baseUrl = System.getProperty("baseUrl");
-
-
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -189,11 +198,6 @@ public class SeleniumTestCaseBase {
 					baseWebDriver = new EventFiringWebDriver(new ChromeDriver(dc)).register(new MyEventListener());
 //					baseWebDriver = new ChromeDriver(dc);
 				}
-
-//				baseWebDriver.manage().window().maximize();
-//				((JavascriptExecutor) baseWebDriver).executeScript("window.focus();");
-//				baseUrl = System.getProperty("baseUrl");
-
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -221,11 +225,6 @@ public class SeleniumTestCaseBase {
 					baseWebDriver = new EventFiringWebDriver(new ChromeDriver(dcOpera)).register(new MyEventListener());
 //					baseWebDriver = new ChromeDriver(dc);
 				}
-
-//				baseWebDriver.manage().window().maximize();
-//				((JavascriptExecutor) baseWebDriver).executeScript("window.focus();");
-//				baseUrl = System.getProperty("baseUrl");
-
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -242,17 +241,17 @@ public class SeleniumTestCaseBase {
 	}
 	
 	// Capture screenshot 
-//		private void captureScreenshot(String fileName) {
-//			try {
-//				// Make sure that the directory is there
-//				new File(Screenshot.DEFAULT_SCREENSHOT_DIRECTORY).mkdirs();
-//				FileOutputStream out = new FileOutputStream(Screenshot.DEFAULT_SCREENSHOT_DIRECTORY + "screenshot-"
-//						+ fileName + ".png");
-//				out.write(webDriver.getScreenshot());
-//				out.close();
-//			} catch (Exception e) {
-//				LOG.error("Could not take the screenshot! Cause: " + e.getClass().getName());
-//	            // e.printStackTrace();
-//			}
-//		}
+		private void captureScreenshot(String fileName) {
+			try {
+				// Make sure that the directory is there
+				new File(Screenshot.DEFAULT_SCREENSHOT_DIRECTORY).mkdirs();
+				FileOutputStream out = new FileOutputStream(Screenshot.DEFAULT_SCREENSHOT_DIRECTORY + "screenshot-"
+						+ fileName + ".png");
+				out.write(webDriver.getScreenshot());
+				out.close();
+			} catch (Exception e) {
+				LOG.error("Could not take the screenshot! Cause: " + e.getClass().getName());
+	            // e.printStackTrace();
+			}
+		}
 }

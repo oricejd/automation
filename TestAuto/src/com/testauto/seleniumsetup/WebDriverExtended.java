@@ -27,7 +27,8 @@ public class WebDriverExtended extends WebDriverDelegate {
 	}
 	
 	public void gotoUrl(String url) {
-		gotoUrl(url, false);
+//		gotoUrl(url, false);
+		get(url);
 	}
 	
 	public void gotoUrl(String url, boolean absolute) {

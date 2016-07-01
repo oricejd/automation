@@ -8,24 +8,23 @@ import org.testng.annotations.Test;
 
 import com.testauto.abstractsetup.AbstractExternalSetupTest;
 import com.testauto.seleniumsetup.WebDriverExtended;
+import com.testauto.setuptestng.SeleniumTestCaseBase;
 //import com.testauto.setuptestng.SeleniumTestCaseBase;
 import com.testauto.util.angular.ByAngular;
 import com.testauto.util.angular.NgWebDriver;
 
-public class TestRun  extends AbstractExternalSetupTest{
-	WebDriverExtended driver = getWebDriverExtended();
-	NgWebDriver ngWebDriver = getWebDriverNg();
-	
+public class TestRun  extends SeleniumTestCaseBase{
+
 	   @Test
 	    public void testRunAttempt() {
 
-	        driver.gotoUrl("http://www.angularjshub.com/code/examples/basics/02_TwoWayDataBinding_HTML/index.demo.php");
-//	        ngWebDriver.waitForAngularRequestsToFinish();
-	        WebElement firstname = driver.findElement(ByAngular.model("firstName"));
-//	        WebElement firstname = driver.findElement(By.id("username"));
+		    webDriver.gotoUrl("http://www.angularjshub.com/code/examples/basics/02_TwoWayDataBinding_HTML/index.demo.php");
+	        ngWebDriver.waitForAngularRequestsToFinish();
+	        WebElement firstname = webDriver.findElement(ByAngular.model("firstName"));
+	        
 	        firstname.clear();
 	        firstname.sendKeys("Mary");
-	        assertEquals(driver.findElement(xpath("//input")).getAttribute("value"), "Mary");
+	        assertEquals(webDriver.findElement(xpath("//input")).getAttribute("value"), "Mary");
 
 	    }
 
