@@ -84,7 +84,7 @@ public class TestClass {
 //        //
 		driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
 		ngWebDriver = new NgWebDriver((JavascriptExecutor)driver);
-   //     ngWebDriver = new NgWebDriver(driver);
+//        ngWebDriver = new NgWebDriver(driver);
     }
     
     @AfterSuite

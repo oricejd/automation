@@ -1,6 +1,6 @@
 package com.testauto.setuptestng;
 
-import static com.testauto.setuptestng.SeleniumTestCaseTestNG.LOG;
+import static com.testauto.setuptestng.SeleniumTestCaseBase.LOG;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -17,7 +17,7 @@ public class MyEventListener implements WebDriverEventListener {
 				return stackTraceElement.getClassName();
 			}else if (stackTraceElement.getClassName().contains("actions")) {
 				return stackTraceElement.getClassName();
-			}else if(stackTraceElement.getClassName().equals(SeleniumTestCaseTestNG.class.getName())){
+			}else if(stackTraceElement.getClassName().equals(SeleniumTestCaseBase.class.getName())){
 				return stackTraceElement.getClassName();
 			}
 		}
