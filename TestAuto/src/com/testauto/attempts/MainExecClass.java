@@ -11,7 +11,7 @@ public class MainExecClass {
 	public static void main(String[] args) {
 
 		TestNG testNG = new TestNG();
-		testNG.setTestClasses(new Class[] { TestClass.class });
+		testNG.setTestClasses(new Class[] { TestRun.class });
 		testNG.addListener(new TestListener());
 		testNG.run();
 

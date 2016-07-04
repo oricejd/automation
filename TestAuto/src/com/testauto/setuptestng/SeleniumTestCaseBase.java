@@ -30,9 +30,13 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 
 import com.testauto.seleniumsetup.WebDriverExtended;
 import com.testauto.setuptestng.Screenshot;
@@ -55,33 +59,24 @@ public class SeleniumTestCaseBase {
 	
     public static NgWebDriver ngWebDriver;
     public static WebDriverExtended webDriver;
-    public static WebDriver driver;
+    public  static WebDriver driver;
 	
 	@BeforeClass
 	public void beforeClass(){
 		
+
 	}
 	
-	
 	@AfterClass
-	public void afterClass(){
-		
+	public void afterClass(){	
+
 	}
 	
 	@BeforeSuite
-	public void beforeSuite() throws Exception{
-
-//    	System.setProperty("webdriver.opera.driver", "drivers/operadriver.exe");
-//    	driver = new EventFiringWebDriver(new OperaDriver()).register(new MyEventListener());
-    	
-//		System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
-//		driver = new EventFiringWebDriver(new ChromeDriver()).register(new MyEventListener());
+	public void beforeSuite() throws Exception{	
 		
-//		System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer32.exe");
-//		driver = new EventFiringWebDriver(new InternetExplorerDriver()).register(new MyEventListener());
-		
-//		System.setProperty("webdriver.firefox.driver", "drivers/IEDriverServer32.exe");
-//		driver = new EventFiringWebDriver(new FirefoxDriver()).register(new MyEventListener());
+		browser = "firefox";//System.getProperty("browserName");
+		grid = "no";//System.getProperty("grid");
 		
 		driver = getBrowserDriver(browser, grid);
 		//
@@ -91,17 +86,40 @@ public class SeleniumTestCaseBase {
 //		webDriver = new WebDriverExtended(webDriver, baseUrl);
 		ngWebDriver = new NgWebDriver((JavascriptExecutor)driver);
 		
-		webDriver.manage().window().maximize();
-		webDriver.executeScript("window.focus();");
-		
 		webDriver.manage().timeouts().implicitlyWait(10, SECONDS);
 		webDriver.manage().timeouts().pageLoadTimeout(10, SECONDS);
+		
+		webDriver.manage().window().maximize();
+		webDriver.executeScript("window.focus();");
+
 	}
 	
 	@AfterSuite
 	public void afrerSuite() throws Exception{
+		
 		webDriver.quit();
 		driver.quit();
+		
+	}
+	
+	@BeforeTest
+	public void beforeTest() throws Exception{	
+	}
+	
+	@AfterTest
+	public void afrerTest() throws Exception{
+		
+	}
+	
+	@BeforeMethod
+	public void beforeMethod(){
+		
+
+	}
+	
+	@AfterMethod
+	public void afterMethod(){	
+
 	}
 
 
@@ -233,7 +251,6 @@ public class SeleniumTestCaseBase {
              break;
          case "opera":
      		try {
-     			
 				if ("yes".equalsIgnoreCase(grid)) {
 			      	 OperaOptions optionsOpera = new OperaOptions();
 		        	 optionsOpera.setBinary(new File("drivers/operadriver.exe"));
@@ -256,7 +273,6 @@ public class SeleniumTestCaseBase {
          default:
              System.out.println("Not able to set Driver object: Unknown Browser");
      }
-		
 		//
 		return baseWebDriver;
 	}

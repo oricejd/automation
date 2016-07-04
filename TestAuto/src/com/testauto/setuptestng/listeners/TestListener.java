@@ -3,10 +3,23 @@
  */
 package com.testauto.setuptestng.listeners;
 
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 import org.testng.Reporter;
+
+import static com.testauto.setuptestng.SeleniumTestCaseBase.LOG;
+import static com.testauto.setuptestng.SeleniumTestCaseBase.webDriver;
+import static com.testauto.util.CaptureScreenshotUtil.captureScreenshot;
+import static com.testauto.util.CaptureScreenshotUtil.getTestClassName;
+
+import java.io.File;
+
+import static com.testauto.setuptestng.SeleniumTestCaseBase.ngWebDriver;
 
 /**
  * @author apopa
@@ -15,6 +28,7 @@ import org.testng.Reporter;
 public class TestListener implements ITestListener {
 	private long startTime;
 	private long endTime;
+
 
 	// This belongs to ITestListener and will execute before starting of Test
 	// set/batch
@@ -45,6 +59,21 @@ public class TestListener implements ITestListener {
 	public void onTestFailure(ITestResult arg0) {
 
 		// This is calling the printTestResults method
+		
+		String testClassName = getTestClassName(arg0.getInstanceName()).trim();
+		String testMethodName = arg0.getName().toString().trim();
+//		String screenShotName = testMethodName + ".png";
+		
+		if (webDriver != null) {
+//			String imagePath = ".." + fileSeperator + "Screenshots"
+//					+ fileSeperator + "Results" + fileSeperator + testClassName
+//					+ fileSeperator
+//					+ takeScreenShot(webDriver, screenShotName, testClassName);
+//			System.out.println("Screenshot can be found : " + imagePath);
+			
+			captureScreenshot(webDriver, testClassName + "_" +testMethodName);
+		}
+
 
 		printTestResults(arg0);
 
