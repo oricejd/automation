@@ -19,11 +19,13 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.opera.OperaDriver;
+import org.openqa.selenium.opera.OperaOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -54,8 +56,6 @@ public class SeleniumTestCaseBase {
     public static NgWebDriver ngWebDriver;
     public static WebDriverExtended webDriver;
     public static WebDriver driver;
-//    private WebDriver driver;
-
 	
 	@BeforeClass
 	public void beforeClass(){
@@ -70,21 +70,25 @@ public class SeleniumTestCaseBase {
 	
 	@BeforeSuite
 	public void beforeSuite() throws Exception{
-//		WebDriver driver = getBrowserDriver(grid);
+
+//    	System.setProperty("webdriver.opera.driver", "drivers/operadriver.exe");
+//    	driver = new EventFiringWebDriver(new OperaDriver()).register(new MyEventListener());
+    	
+//		System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
+//		driver = new EventFiringWebDriver(new ChromeDriver()).register(new MyEventListener());
 		
-		//
-		//
+//		System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer32.exe");
+//		driver = new EventFiringWebDriver(new InternetExplorerDriver()).register(new MyEventListener());
 		
-    	System.setProperty("webdriver.opera.driver", "drivers/operadriver.exe");
-    	driver = new EventFiringWebDriver(new OperaDriver()).register(new MyEventListener());
-      
+//		System.setProperty("webdriver.firefox.driver", "drivers/IEDriverServer32.exe");
+//		driver = new EventFiringWebDriver(new FirefoxDriver()).register(new MyEventListener());
 		
-		//
+		driver = getBrowserDriver(browser, grid);
 		//
 		baseUrl = System.getProperty("baseUrl");
 		
-//		webDriver = new WebDriverExtended(driver);
-		webDriver = new WebDriverExtended(webDriver, baseUrl);
+		webDriver = new WebDriverExtended(driver);
+//		webDriver = new WebDriverExtended(webDriver, baseUrl);
 		ngWebDriver = new NgWebDriver((JavascriptExecutor)driver);
 		
 		webDriver.manage().window().maximize();
@@ -151,11 +155,12 @@ public class SeleniumTestCaseBase {
 	}
 	
 	//returns specific browser driver instance
-	public WebDriver getBrowserDriver(String grid){
+	public static WebDriver getBrowserDriver(String browser, String grid){
 		WebDriver baseWebDriver = null;
-		String browser = System.getProperty("browser");
+		String os = System.getProperty("os.name").toLowerCase();
 		
 		switch (browser) {
+		// Firefox Web Driver init here
          case "firefox":
              //
      		FirefoxProfile ffProfile = new FirefoxProfile();
@@ -181,13 +186,13 @@ public class SeleniumTestCaseBase {
          // Chrome Web Driver init here    
          case "chrome":
              //
-        	 ChromeOptions options = new ChromeOptions();
-        	 //options.addExtensions(new File("/path/to/extension.crx"));
-        	 options.setBinary(new File("/drivers/chromedriver.exe"));
-  			DesiredCapabilities dc = DesiredCapabilities.chrome();
-  			dc.setCapability(ChromeOptions.CAPABILITY, options);
-        	 
      		try {
+           	 ChromeOptions options = new ChromeOptions();
+           	 //options.addExtensions(new File("/path/to/extension.crx"));
+           	 options.setBinary(new File("/drivers/chromedriver.exe"));
+     			DesiredCapabilities dc = DesiredCapabilities.chrome();
+     			dc.setCapability(ChromeOptions.CAPABILITY, options);
+     			
 				dc.setCapability("platform", ANY);
 
 				if ("yes".equalsIgnoreCase(grid)) {
@@ -195,45 +200,61 @@ public class SeleniumTestCaseBase {
 					baseWebDriver = new EventFiringWebDriver(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc)).register(new MyEventListener());
 //					baseWebDriver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
 				} else {
-					baseWebDriver = new EventFiringWebDriver(new ChromeDriver(dc)).register(new MyEventListener());
+					
+					System.setProperty("webdriver.chrome.driver", "drivers/chromedriver.exe");
+//					baseWebDriver = new EventFiringWebDriver(new ChromeDriver(dc)).register(new MyEventListener());
+					baseWebDriver = new EventFiringWebDriver(new ChromeDriver()).register(new MyEventListener());
+					
 //					baseWebDriver = new ChromeDriver(dc);
 				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-        	
         	 //End Chrome
              break;
          case "ie":
-             //ToDo
+ 			try {
+ 				DesiredCapabilities dc = DesiredCapabilities.internetExplorer();
+ 				dc.setCapability("platform", ANY);
+
+ 				if ("yes".equalsIgnoreCase(grid)) {
+ 					dc.setBrowserName(DesiredCapabilities.internetExplorer().getBrowserName());
+ 					baseWebDriver = new EventFiringWebDriver(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc)).register(new MyEventListener());
+// 					baseWebDriver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
+ 				} else {
+ 					System.setProperty("webdriver.ie.driver", "drivers/IEDriverServer.exe");
+ 					driver = new EventFiringWebDriver(new InternetExplorerDriver()).register(new MyEventListener());
+ 				}
+
+ 			} catch (MalformedURLException e) {
+ 				e.printStackTrace();
+ 			}
+
              break;
          case "opera":
-         	 ChromeOptions optionsOpera = new ChromeOptions();
-        	 //options.addExtensions(new File("/path/to/extension.crx"));
-        	 optionsOpera.setBinary(new File("/drivers/operadriver.exe"));
-  			DesiredCapabilities dcOpera = DesiredCapabilities.chrome();
-  			dcOpera.setCapability(ChromeOptions.CAPABILITY, optionsOpera);
-        	 
      		try {
-     			dcOpera.setCapability("platform", ANY);
-
+     			
 				if ("yes".equalsIgnoreCase(grid)) {
+			      	 OperaOptions optionsOpera = new OperaOptions();
+		        	 optionsOpera.setBinary(new File("drivers/operadriver.exe"));
+		  			@SuppressWarnings("deprecation") 
+		  			DesiredCapabilities dcOpera = DesiredCapabilities.opera();
+		  			dcOpera.setCapability(OperaOptions.CAPABILITY, optionsOpera);
+					dcOpera.setCapability("platform", ANY);
 					dcOpera.setBrowserName(DesiredCapabilities.chrome().getBrowserName());
 					baseWebDriver = new EventFiringWebDriver(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dcOpera)).register(new MyEventListener());
 //					baseWebDriver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dc);
 				} else {
-					baseWebDriver = new EventFiringWebDriver(new ChromeDriver(dcOpera)).register(new MyEventListener());
-//					baseWebDriver = new ChromeDriver(dc);
+			    	System.setProperty("webdriver.opera.driver", "drivers/operadriver.exe");
+			    	baseWebDriver = new EventFiringWebDriver(new OperaDriver()).register(new MyEventListener());
 				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
-        	 
              //End Opera driver
              break;
-//         default:
-//             Do nothing for now
-//             ToDo
+         default:
+             System.out.println("Not able to set Driver object: Unknown Browser");
      }
 		
 		//
@@ -241,7 +262,7 @@ public class SeleniumTestCaseBase {
 	}
 	
 	// Capture screenshot 
-		private void captureScreenshot(String fileName) {
+		private void captureScreenshot(String fileName, WebDriverExtended webDriver) {
 			try {
 				// Make sure that the directory is there
 				new File(Screenshot.DEFAULT_SCREENSHOT_DIRECTORY).mkdirs();
