@@ -40,7 +40,19 @@ import org.testng.annotations.BeforeTest;
 
 import com.testauto.seleniumsetup.WebDriverExtended;
 import com.testauto.setuptestng.Screenshot;
+import com.testauto.util.CaptureScreenshotUtil;
 import com.testauto.util.angular.NgWebDriver;
+
+import static com.testauto.setuptestng.SeleniumTestCaseBase.LOG;
+import static com.testauto.setuptestng.SeleniumTestCaseBase.webDriver;
+//import static com.testauto.setuptestng.SeleniumTestCaseBase.webDriver;
+import static com.testauto.util.CaptureScreenshotUtil.captureScreenshot;
+import static com.testauto.util.CaptureScreenshotUtil.getTestClassName;
+
+import org.testng.ITestContext;
+import org.testng.ITestListener;
+import org.testng.ITestResult;
+import org.testng.Reporter;
 
 /**
  * @author apopa
@@ -118,7 +130,18 @@ public class SeleniumTestCaseBase {
 	}
 	
 	@AfterMethod
-	public void afterMethod(){	
+	public void afterMethod(ITestResult result){	
+		if(!result.isSuccess()){
+			//take screenshot
+			// result.getTestClass().getName()
+			
+			String testClassName = getTestClassName(result.getInstanceName()).trim();
+			String testMethodName = result.getName().toString().trim();
+			
+			captureScreenshot(testClassName + "_" +testMethodName , webDriver);
+		}
+		webDriver.quit();
+		driver.quit();
 
 	}
 
